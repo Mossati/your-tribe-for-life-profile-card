@@ -1,2 +1,2 @@
 //De client-side rendering van SvelteKit staat uit
-export let csr = false
+export let csr = true

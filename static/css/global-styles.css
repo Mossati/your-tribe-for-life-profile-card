@@ -1,3 +1,19 @@
+:root {
+    --background-main-primary: #fdd069;
+    --background-main-secondary: #be360b;
+    --background-radar-primary: #daffb1;
+    --background-radar-secondary: #7dbb58;
+    --background-radar-tertiary: #245515;
+    --background-border-primary: #759792;
+    --background-border-secondary: #e4e7e8;
+    --background-ball-primary: #fedd1d;
+    --background-ball-secondary: #d3960b;
+    --background-header-primary: #010101;
+    --background-button-primary: #922707;
+    --text-primary: #390b00;
+    --text-secondary: #fefefe;
+}
+
 * {
     margin: 0;
     padding: 0;

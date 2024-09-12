@@ -1,84 +1,202 @@
 <script>
   export let data;
 
-  let collectedBalls = [];
+  // Counter voor de dragon balls
+  let count = 0;
+  let collected = [];
 
-  // Generate random positions for the dragon balls
-  function getRandomPosition() {
+  const totalDragonBalls = 7;
+  let pingActive = false;
+  let showMenu = true;     // Variabele om het menu te tonen of te verwijderen
+  let gameStarted = false; // Variabele om te bepalen of het spel is begonnen
+
+  // Haal de menu-sectie weg en start het spel
+  function removeMenu() {
+    showMenu = false;
+    gameStarted = true;
+    startPingEffect();
+  }
+
+  // Functie om random posities te genereren voor de dragon balls
+  function randomPosition() {
     return {
-      top: `${Math.random() * 80}vh`, // Adjusted to prevent balls from going off-screen
-      left: `${Math.random() * 80}vw`,
+      top: `${Math.random() * 80}vh`,
+      left: `${Math.random() * 80}vw`
     };
   }
 
-  // Generate dragon balls with random positions
-  let dragonBalls = Array.from({ length: 7 }, (_, i) => ({
-    id: i,
-    ...getRandomPosition(),
-  }));
-
-  function collectBall(id) {
-    console.log(`Collecting ball with id: ${id}`);
-    if (!collectedBalls.includes(id)) {
-      collectedBalls = [...collectedBalls, id];
+  // Voeg een dragon ball toe aan de array en update de counter
+  function addBall(index) {
+    if (!collected.includes(index)) {
+      collected.push(index); // Voeg bal toe aan verzameling
+      count++;
     }
+  }
+
+  // Ping effect: zet elke 3 seconden de opacity op 0.5 voor 1 seconde
+  function startPingEffect() {
+    setInterval(() => {
+      pingActive = true;
+      setTimeout(() => {
+        pingActive = false;
+      }, 1000);
+    }, 3000);
   }
 </script>
 
 <main>
-  <section>
-    <h1>{data.person.name}</h1>
-    <div class="counter">Collected: {collectedBalls.length}/7</div>
-  </section>
+  {#if showMenu}
+    <section class="menu">
+      <h1 class="title">Dragon Radar</h1>
+      <p class="mission">Collect all Dragon Balls to view my profile card</p>
+      <button class="button" on:click={removeMenu}>Play</button>
+    </section>
+  {/if}
 
-  <div class="grid-container">
-    {#each dragonBalls as { id, top, left } (id)}
-      {#if !collectedBalls.includes(id)}
-        <div class="dragon-ball" style="top: {top}; left: {left};" on:click={collectBall(id)}>★</div>
+  {#if gameStarted}
+    <p class="title">Dragon Balls collected: {count}/{totalDragonBalls}</p>
+
+    <div class="grid-container">
+      {#each Array(totalDragonBalls) as _, index}
+      {#if !collected.includes(index)}
+        <button
+          aria-label="dragon-ball"
+          class="dragon-ball"
+          on:click={() => addBall(index)}
+          class:ping={pingActive}
+          style="top: {randomPosition().top}; left: {randomPosition().left};">
+        </button>
       {/if}
     {/each}
-  </div>
+    </div>
+  {/if}
+
+  {#if count === totalDragonBalls}
+    <section class="profile-card">
+      <h2 class="title">Profile Card</h2>
+      <img src={data.person.avatar} alt="avatar">
+      <h3>{data.person.name + ' ' + data.person.prefix + ' ' + data.person.surname}</h3>
+      <p><span>Nickname</span> {data.person.nickname}</p>
+      <p><span>Biography</span> {data.person.bio}</p>
+      <p><span>Squad</span> 2C</p>
+      <a class="button" href="{data.person.website}">{data.person.github_handle}</a>
+    </section>
+  {/if}
 </main>
 
 <style>
+  /* =================================================== */
+  /* Global */
+  /* =================================================== */
   main {
-    background-image: radial-gradient(#46763c, #38613a);
-    height: 100vh;
-    overflow: hidden;
-    cursor: url('/assets/arrow.png'), auto; /* Ensure you have a valid red cursor image */
-  }
-
-  .grid-container {
-    background-image: url('/assets/grid-lines.png');
+    background-image: url('/assets/grid-lines.png'), linear-gradient(190deg, var(--background-radar-primary), var(--background-radar-secondary), var(--background-radar-tertiary));
     background-position: center;
     background-repeat: repeat;
-    height: 100%;
+    height: 100vh;
+    overflow: hidden;
+    cursor: url('/assets/arrow.png'), auto;
+    border: 1rem solid transparent; 
+    border-image: linear-gradient(to right, var(--background-border-primary), var(--background-border-secondary)); 
+    border-image-slice: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: relative;
   }
 
+  .grid-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  /* =================================================== */
+  /* Menu en Profile Card */
+  /* =================================================== */
+  .menu, .profile-card {
+    z-index: 2;
+    background-image: radial-gradient(var(--background-main-primary), var(--background-main-secondary));
+    padding: 1rem;
+    color: var(--text-primary);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .title {
+    background-color: var(--background-header-primary);
+    color: #fefefe;
+    padding: 1rem;
+    border: 0.4rem solid var(--text-secondary);
+  }
+
+  .mission {
+    color: var(--text-primary);
+  }
+
+  img {
+    width: 10rem;
+    height: 10rem;
+    border: 0.4rem solid var(--text-secondary);
+  }
+
+  span {
+    color: var(--text-secondary);
+    font-weight: 600;
+    display: block;
+  }
+  /* =================================================== */
+  /* Buttons */
+  /* =================================================== */
+  .button {
+    background-color: var(--background-button-primary);
+    color: var(--text-secondary);
+    padding: 1rem 5rem;
+    border-radius: 1rem;
+    outline: none;
+    text-decoration: none;
+    border: 0.1rem solid var(--text-secondary);
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .button:hover {
+    background: transparent;
+  }
+  /* =================================================== */
+  /* Dragon Balls */
+  /* =================================================== */
   .dragon-ball {
-    background-image: radial-gradient(#fea609, #e85e00);
-    width: 5rem;
-    height: 5rem;
+    background-image: radial-gradient(var(--background-ball-primary), var(--background-ball-secondary));
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 50%;
     padding: 1rem;
-    color: #c50401;
     outline: none;
-    border: 0.1rem solid #fff0da;
+    border: none;
+    box-shadow: 0 0 50px 15px var(--background-ball-primary);
     text-align: center;
     cursor: pointer;
     position: absolute;
-    opacity: 0; /* Initially hidden */
-    transition: opacity 0.3s; /* Smooth transition for opacity change */
+    opacity: 0;
+    transition: opacity 0.2s;
   }
 
   .dragon-ball:hover {
-    opacity: 1; /* Change opacity on hover */
+    opacity: 1;
   }
 
-  .counter {
-    font-size: 1.5rem;
-    color: white;
-    margin-bottom: 1rem;
+  /* De 'ping' class activeert het radar-effect */
+  .dragon-ball.ping {
+    opacity: 0.5;
+    transition: opacity 0.5s;
   }
 </style>

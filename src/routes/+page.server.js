@@ -7,7 +7,7 @@ export async function load() {
   const url = 'https://fdnd.directus.app/items/person/56'
   //fetch de data uit de API url en sla het op in deze variable
   const person = await fetchJson(url)
-  //return een object waarin persons.data wordt meegegeven
+  //return een object waarin person.data wordt meegegeven
   return {
     person: person.data
   }
