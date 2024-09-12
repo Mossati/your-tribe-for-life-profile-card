@@ -1,14 +1,13 @@
 <script>
   export let data;
 
-  // Counter voor de dragon balls
   let count = 0;
   let collected = [];
-
   const totalDragonBalls = 7;
   let pingActive = false;
-  let showMenu = true;     // Variabele om het menu te tonen of te verwijderen
-  let gameStarted = false; // Variabele om te bepalen of het spel is begonnen
+  let showMenu = true;
+  let gameStarted = false;
+  let wishGranted = false;
 
   // Haal de menu-sectie weg en start het spel
   function removeMenu() {
@@ -42,6 +41,10 @@
       }, 1000);
     }, 3000);
   }
+
+  function grantWish() {
+    wishGranted = true;
+  }
 </script>
 
 <main>
@@ -54,7 +57,7 @@
   {/if}
 
   {#if gameStarted}
-    <p class="title">Dragon Balls collected: {count}/{totalDragonBalls}</p>
+    <p class="title counter">Dragon Balls collected: {count}/{totalDragonBalls}</p>
 
     <div class="grid-container">
       {#each Array(totalDragonBalls) as _, index}
@@ -71,7 +74,14 @@
     </div>
   {/if}
 
-  {#if count === totalDragonBalls}
+  {#if count === totalDragonBalls && wishGranted === false}
+  <section class="shenron-awakening">
+    <h2>Do you wish to see the profile card?</h2>
+    <button class="button" on:click={grantWish}>Wish!</button>
+  </section>
+  {/if}
+
+  {#if wishGranted}
     <section class="profile-card">
       <h2 class="title">Profile Card</h2>
       <img src={data.person.avatar} alt="avatar">
@@ -95,9 +105,9 @@
     height: 100vh;
     overflow: hidden;
     cursor: url('/assets/arrow.png'), auto;
-    border: 1rem solid transparent; 
+    /* border: 1rem solid transparent; 
     border-image: linear-gradient(to right, var(--background-border-primary), var(--background-border-secondary)); 
-    border-image-slice: 1;
+    border-image-slice: 1; */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -109,6 +119,23 @@
     position: relative;
     width: 100%;
     height: 100%;
+  }
+
+  .counter {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .counter::after {
+    content: "";
+    width: 1rem;
+    height: 1rem;
+    display: inline-block;
+    background-image: radial-gradient(var(--background-ball-primary), var(--background-ball-secondary));
+    border-radius: 50%;
+    margin-left: 0.5rem;
   }
   /* =================================================== */
   /* Menu en Profile Card */
@@ -131,6 +158,11 @@
     gap: 1rem;
   }
 
+  .menu {
+    background-image: url('/assets/goku.png'), radial-gradient(var(--background-main-primary), var(--background-main-secondary));
+    background-repeat: no-repeat;
+  }
+
   .title {
     background-color: var(--background-header-primary);
     color: #fefefe;
@@ -139,10 +171,13 @@
   }
 
   .mission {
-    color: var(--text-primary);
+    color: var(--text-secondary);
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 1rem;
+    padding: 0.5rem;
   }
 
-  img {
+  .profile-card img {
     width: 10rem;
     height: 10rem;
     border: 0.4rem solid var(--text-secondary);
@@ -152,6 +187,28 @@
     color: var(--text-secondary);
     font-weight: 600;
     display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .shenron-awakening {
+    z-index: 2;
+    background-image: url('/assets/shenron.png');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    padding: 1rem;
+    color: var(--text-secondary);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
   }
   /* =================================================== */
   /* Buttons */
