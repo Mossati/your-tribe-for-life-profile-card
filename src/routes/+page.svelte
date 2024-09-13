@@ -168,6 +168,16 @@
     background-repeat: no-repeat;
   }
 
+  h1::after {
+    content: "";
+    width: 1rem;
+    height: 1rem;
+    display: inline-block;
+    background-image: radial-gradient(var(--background-radar-primary), var(--background-radar-secondary));
+    border-radius: 50%;
+    margin-left: 0.5rem;
+  }
+
   .title {
     background-color: var(--background-header-primary);
     color: #fefefe;
