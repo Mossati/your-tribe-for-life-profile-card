@@ -1,4 +1,9 @@
 <script>
+  import { fly } from 'svelte/transition';
+  import { fade } from 'svelte/transition';
+  import { slide } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
+
   export let data;
 
   let count = 0;
@@ -57,7 +62,7 @@
   {/if}
 
   {#if gameStarted}
-    <p class="title counter">Dragon Balls collected: {count}/{totalDragonBalls}</p>
+    <p class="title counter" transition:fly={{ y: 200, duration: 2000 }}>Dragon Balls collected: {count}/{totalDragonBalls}</p>
 
     <div class="grid-container">
       {#each Array(totalDragonBalls) as _, index}
@@ -75,14 +80,14 @@
   {/if}
 
   {#if count === totalDragonBalls && wishGranted === false}
-  <section class="shenron-awakening">
+  <section class="shenron-awakening" transition:fade>
     <h2>Do you wish to see the profile card?</h2>
     <button class="button" on:click={grantWish}>Wish!</button>
   </section>
   {/if}
 
   {#if wishGranted}
-    <section class="profile-card">
+    <section class="profile-card" transition:slide={{ delay: 250, duration: 300, easing: quintOut, axis: 'x' }}>
       <h2 class="title">Profile Card</h2>
       <img src={data.person.avatar} alt="avatar">
       <h3>{data.person.name + ' ' + data.person.prefix + ' ' + data.person.surname}</h3>
